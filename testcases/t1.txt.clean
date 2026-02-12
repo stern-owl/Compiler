@@ -1,0 +1,27 @@
+
+
+
+_statistics input parameter list [int c2dbc, int d7, int b2d567] output parameter list [real d2, real c3bcd];
+type real: c3 : global;
+c3 <--- 3;
+d2 <--- (c2dbc + d7 + b2d567) / c3;
+c3bcd <--- d2 * 3.23;
+return [d2, c3bcd];
+end
+
+_main
+type real: c4 :;
+type real: d3cd6 :;
+type int: b4d333 :;
+type int: c3ddd34 :;
+
+read(b4d333);
+read(c3ddd34);
+
+[c4, d3cd6] <--- call _statistics with parameters [b4d333, c3ddd34];
+
+write(c4);
+write(d3cd6);
+
+return;
+end

@@ -1,0 +1,203 @@
+# LL(1) Grammar for the Language
+# Compiler Project - CS F363
+#
+# Format: <non-terminal> -> symbol1 symbol2 ... | eps
+# Terminals start with TK_
+# Non-terminals are enclosed in angle brackets
+# eps or EPSILON represents epsilon production
+#
+# This grammar is LL(1) compatible with left recursion removed
+# and left factoring applied
+
+# Start Symbol
+program -> otherFunctions mainFunction
+
+# Main Function
+mainFunction -> TK_MAIN stmts TK_END
+
+# Other Functions
+otherFunctions -> function otherFunctions
+otherFunctions -> eps
+
+# Function Definition
+function -> TK_FUNID input_par output_par TK_SEM stmts TK_END
+
+# Input Parameters
+input_par -> TK_INPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR
+
+# Output Parameters (can be empty)
+output_par -> TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR
+output_par -> eps
+
+# Parameter List
+parameter_list -> dataType TK_ID remaining_list
+
+# Remaining parameters
+remaining_list -> TK_COMMA parameter_list
+remaining_list -> eps
+
+# Data Types
+dataType -> primitiveDatatype
+dataType -> constructedDatatype
+
+# Primitive Data Types
+primitiveDatatype -> TK_INT
+primitiveDatatype -> TK_REAL
+
+# Constructed Data Types
+constructedDatatype -> TK_RECORD TK_RUID
+constructedDatatype -> TK_UNION TK_RUID
+
+# Statements Block
+stmts -> typeDefinitions declarations otherStmts returnStmt
+
+# Type Definitions
+typeDefinitions -> typeDefinition typeDefinitions
+typeDefinitions -> definetypestmt typeDefinitions
+typeDefinitions -> eps
+
+# Type Definition (Record) - with optional semicolon
+typeDefinition -> TK_RECORD TK_RUID fieldDefinitions TK_ENDRECORD optionalSem
+typeDefinition -> TK_UNION TK_RUID fieldDefinitions TK_ENDUNION optionalSem
+
+# Optional semicolon after type definition
+optionalSem -> TK_SEM
+optionalSem -> eps
+
+# Define Type Statement
+definetypestmt -> TK_DEFINETYPE typeConstructor TK_RUID TK_AS TK_RUID
+
+# Type Constructor for definetype
+typeConstructor -> TK_RECORD
+typeConstructor -> TK_UNION
+
+# Field Definitions (at least 2 fields)
+fieldDefinitions -> fieldDefinition fieldDefinition moreFields
+
+# Single Field Definition
+fieldDefinition -> TK_TYPE primitiveDatatype TK_COLON TK_FIELDID TK_SEM
+
+# More Fields (optional)
+moreFields -> fieldDefinition moreFields
+moreFields -> eps
+
+# Declarations
+declarations -> declaration declarations
+declarations -> eps
+
+# Single Declaration - left factored for optional global clause
+declaration -> TK_TYPE dataType TK_COLON TK_ID globalClause TK_SEM
+
+# Global Clause (optional colon + global)
+globalClause -> TK_COLON global_or_not
+globalClause -> eps
+
+# Global or Not
+global_or_not -> TK_GLOBAL
+global_or_not -> eps
+
+# Other Statements
+otherStmts -> stmt otherStmts
+otherStmts -> eps
+
+# Statement Types
+stmt -> assignmentStmt
+stmt -> iterativeStmt
+stmt -> conditionalStmt
+stmt -> ioStmt
+stmt -> funCallStmt
+
+# Assignment Statement
+assignmentStmt -> singleOrRecId TK_ASSIGNOP arithmeticExpression TK_SEM
+
+# Single or Record ID (left factored)
+singleOrRecId -> TK_ID optionalField
+
+# Optional Field Access
+optionalField -> TK_DOT TK_FIELDID
+optionalField -> eps
+
+# Function Call Statement
+funCallStmt -> outputParameters TK_CALL TK_FUNID TK_WITH TK_PARAMETERS inputParameters TK_SEM
+
+# Output Parameters (optional)
+outputParameters -> TK_SQL idList TK_SQR TK_ASSIGNOP
+outputParameters -> eps
+
+# Input Parameters
+inputParameters -> TK_SQL idList TK_SQR
+
+# Iterative Statement (while loop)
+iterativeStmt -> TK_WHILE TK_OP booleanExpression TK_CL stmt otherStmts TK_ENDWHILE
+
+# Conditional Statement (left factored to handle if-then vs if-then-else)
+conditionalStmt -> TK_IF booleanExpression TK_THEN stmt otherStmts elseClause
+
+# Else Clause (handles optional else)
+elseClause -> TK_ELSE otherStmts TK_ENDIF
+elseClause -> TK_ENDIF
+
+# I/O Statements
+ioStmt -> TK_READ TK_OP var TK_CL TK_SEM
+ioStmt -> TK_WRITE TK_OP var TK_CL TK_SEM
+
+# Arithmetic Expression (left recursion removed, precedence added)
+# Following standard expr -> term expPrime pattern
+arithmeticExpression -> term expPrime
+
+# Expression Prime (handles + and -)
+expPrime -> TK_PLUS term expPrime
+expPrime -> TK_MINUS term expPrime
+expPrime -> eps
+
+# Term (handles * and /)
+term -> factor termPrime
+
+# Term Prime
+termPrime -> TK_MUL factor termPrime
+termPrime -> TK_DIV factor termPrime
+termPrime -> eps
+
+# Factor
+factor -> TK_OP arithmeticExpression TK_CL
+factor -> var
+
+# Boolean Expression
+booleanExpression -> TK_OP booleanExpression TK_CL logicalOp TK_OP booleanExpression TK_CL
+booleanExpression -> var relationalOp var
+booleanExpression -> TK_NOT booleanExpression
+
+# Variable - supports single ID or ID.FIELDID
+var -> TK_ID varSuffix
+var -> TK_NUM
+var -> TK_RNUM
+
+# Variable Suffix (optional field access)
+varSuffix -> TK_DOT TK_FIELDID
+varSuffix -> eps
+
+# Logical Operators
+logicalOp -> TK_AND
+logicalOp -> TK_OR
+
+# Relational Operators
+relationalOp -> TK_LT
+relationalOp -> TK_LE
+relationalOp -> TK_EQ
+relationalOp -> TK_GT
+relationalOp -> TK_GE
+relationalOp -> TK_NE
+
+# Return Statement
+returnStmt -> TK_RETURN optionalReturn TK_SEM
+
+# Optional Return Values
+optionalReturn -> TK_SQL idList TK_SQR
+optionalReturn -> eps
+
+# ID List
+idList -> TK_ID more_ids
+
+# More IDs
+more_ids -> TK_COMMA idList
+more_ids -> eps

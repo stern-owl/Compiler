@@ -1,0 +1,32 @@
+% Test case for lexical errors
+% Testing the corrections mentioned
+
+type int: b2;
+b2 <-- 23;
+% Error: <-- should be error (incomplete assignop)
+
+type real: c2;
+c2 <- 5;
+% Error: <- should be error
+
+type int: d2;
+d2 <--- 23.abc;
+% Error: 23. should be error, abc is FIELDID
+
+type int: e2;
+e2 <--- 23.4;
+% Error: 23.4 is error (need exactly 2 digits after decimal)
+
+type int: f2;
+f2 <--- 23.45E-;
+% Error: 23.45E- is error (incomplete exponent)
+
+type int: g2;
+g2 <--- @@ 5;
+% Error: @@ is error (incomplete OR)
+
+type int: h2;
+h2 <--- && 5;
+% Error: && is error (incomplete AND)
+
+end
