@@ -1,4 +1,4 @@
-# Compiler Project - Stage 1
+# Compiler Project
 
 A complete compiler front-end implementation featuring a lexical analyzer and predictive parser for a custom programming language.
 
