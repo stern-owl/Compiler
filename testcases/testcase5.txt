@@ -1,0 +1,34 @@
+%Test Case 5: Tests new grammar features from professor's modified LL(1) grammar
+%Features: nested record access, TK_RUID alias, parenthesized if/not, fieldType
+
+_main
+	definetype record #abc as #pqr
+
+	record #definitionone
+		type int : z;
+		type #pqr : a;
+		type real : b;
+	endrecord
+
+	type #pqr : c5;
+	type record #definitionone : c2d4;
+
+	c2d4.z <--- 10;
+	c2d4.a.z <--- 20;
+
+	if (c2d4.z > c5.z) then
+		write(c2d4.z);
+	else
+		write(c5.z);
+	endif
+
+	if (~(c2d4.z < 0)) then
+		c2d4.b <--- 3.14;
+	endif
+
+	while (c2d4.z > 0)
+		c2d4.z <--- c2d4.z - 1;
+	endwhile
+
+	return;
+end

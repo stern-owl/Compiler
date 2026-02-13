@@ -19,7 +19,7 @@ _main
 	record  #rec 
 		type int : len; 
 		type int : height; 
-  	endrecord; 
+  	endrecord
 	type record #rec : b2; 
 	type record #rec : d5b: global; 
 	b2.len<---5;
